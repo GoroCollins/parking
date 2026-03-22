@@ -1,0 +1,64 @@
+name: parking
+
+volumes:
+    dev_app_data:
+        name: dev_mysql_app_data
+    static_files:
+        name: parking_dev_static_files
+    media_files:
+        name: parking_dev_media_files
+
+services:
+
+    mysql:
+        image: mysql:8.4.8
+        hostname: parking-mysql
+        container_name: parking_mysql
+        volumes:
+            - dev_app_data:/var/lib/mysql
+        env_file:
+            - ./backend/.dev.env
+        healthcheck:
+          test: ["CMD", "mysql", "-h", "-p${MYSQL_HOST}", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}", "-e", "SELECT 1"]
+          timeout: 20s
+          retries: 10
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        image: parking:development
+        restart: unless-stopped
+        container_name: parking-backend
+        command: /app/docker/django/start.sh backend
+        depends_on:
+          - mysql
+        env_file:
+            - ./backend/.dev.env
+        ports:
+            - 8000:8000
+        volumes:
+            - ./backend:/app:rw
+            - static_files:/app/staticfiles:rw
+            - media_files:/app/media:rw
+        environment:
+            HEALTHCHECK_HOST: localhost
+            HEALTHCHECK_PORT: 8000
+        healthcheck:
+            test: ["CMD", "/app/dockerprod/django/healthcheck.sh"]
+            interval: 30s
+            retries: 5
+            start_period: 120s # Allow backend time to start
+            timeout: 10s
+
+    # client:
+    #     build:
+    #         context: ./frontend
+    #         dockerfile: Dockerfile.dev
+    #     container_name: helpdesk-client
+    #     ports:
+    #         - 5173:5173
+    #     volumes:
+    #         - ./frontend:/app
+    #     depends_on:
+    #         backend:
+    #             condition: service_healthy
