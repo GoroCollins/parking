@@ -6,21 +6,20 @@ set -o nounset
 
 # Function to check if MySQL is ready
 mysql_ready() {
-    python3 << END
+python3 << END
 import sys
-import mysql.connector
-from mysql.connector import Error
+import MySQLdb
 
 try:
-    conn = mysql.connector.connect(
+    conn = MySQLdb.connect(
         host="${MYSQL_HOST}",
         port=int("${MYSQL_PORT}"),
         user="${MYSQL_USER}",
-        password="${MYSQL_PASSWORD}",
-        database="${MYSQL_DATABASE}",
+        passwd="${MYSQL_PASSWORD}",
+        db="${MYSQL_DATABASE}",
     )
     conn.close()
-except Error:
+except Exception:
     sys.exit(-1)
 END
 }
@@ -46,12 +45,12 @@ fi
 python3 manage.py migrate
 
 # Custom management commands
-echo "Creating system roles"
-python3 manage.py create_roles
+# echo "Creating system roles"
+# python3 manage.py create_roles
 
 # Load fixtures in debug mode if db.json exists
 if [[ "$DEBUG" == "True" ]]; then
-    if [ -f "db.json" ]; then
+    if [ -f "seeder.json" ]; then
         echo "Loading dummy database..."
         python3 manage.py load_fixtures
     else
@@ -62,8 +61,8 @@ else
 fi
 
 # Assign super user to Admin group
-echo "Assigning superuser to Admin group..."
-python3 manage.py assign_admin_group
+# echo "Assigning superuser to Admin group..."
+# python3 manage.py assign_admin_group
 
 # Collect static files
 echo "Collecting static files..."

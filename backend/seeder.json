@@ -1,0 +1,17 @@
+[
+  {
+    "model": "authentication.customuser",
+    "pk": "1",
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$JJohlIGwTj59cDWrvcC5aO$fwKbcLcvrrwIh+Z64W0wMHM70mV1rwqHdCpDk7b/l40=",
+      "last_login": "2025-01-27T07:09:00Z",
+      "is_superuser": true,
+      "is_staff": true,
+      "is_active": true,
+      "username": "admin",
+      "first_name": "Admin",
+      "last_name": "User",
+      "date_joined": "2025-01-27T07:09:00Z"
+    }
+  }
+]

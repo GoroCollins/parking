@@ -19,7 +19,7 @@ services:
         env_file:
             - ./backend/.dev.env
         healthcheck:
-          test: ["CMD", "mysql", "-h", "-p${MYSQL_HOST}", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}", "-e", "SELECT 1"]
+          test: ["CMD-SHELL", "mysql -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1'"]
           timeout: 20s
           retries: 10
     backend:
@@ -31,7 +31,8 @@ services:
         container_name: parking-backend
         command: /app/docker/django/start.sh backend
         depends_on:
-          - mysql
+          mysql:
+            condition: service_healthy
         env_file:
             - ./backend/.dev.env
         ports:
