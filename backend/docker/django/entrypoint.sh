@@ -45,8 +45,8 @@ fi
 python3 manage.py migrate
 
 # Custom management commands
-# echo "Creating system roles"
-# python3 manage.py create_roles
+echo "Creating system roles"
+python3 manage.py create_roles
 
 # Load fixtures in debug mode if db.json exists
 if [[ "$DEBUG" == "True" ]]; then
@@ -61,8 +61,8 @@ else
 fi
 
 # Assign super user to Admin group
-# echo "Assigning superuser to Admin group..."
-# python3 manage.py assign_admin_group
+echo "Assigning superuser to Admin group..."
+python3 manage.py assign_admin_group
 
 # Collect static files
 echo "Collecting static files..."

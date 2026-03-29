@@ -45,21 +45,22 @@ services:
             HEALTHCHECK_HOST: localhost
             HEALTHCHECK_PORT: 8000
         healthcheck:
-            test: ["CMD", "/app/dockerprod/django/healthcheck.sh"]
+            test: ["CMD-SHELL", "/app/docker/django/healthcheck.sh"]
             interval: 30s
             retries: 5
             start_period: 120s # Allow backend time to start
             timeout: 10s
 
-    # client:
-    #     build:
-    #         context: ./frontend
-    #         dockerfile: Dockerfile.dev
-    #     container_name: helpdesk-client
-    #     ports:
-    #         - 5173:5173
-    #     volumes:
-    #         - ./frontend:/app
-    #     depends_on:
-    #         backend:
-    #             condition: service_healthy
+    client:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        container_name: parking-client
+        ports:
+            - 5173:5173
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules 
+        depends_on:
+            backend:
+                condition: service_healthy

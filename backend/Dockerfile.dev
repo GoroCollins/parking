@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NOWARNINGS="yes"
 
-# Install system dependencies for PostgreSQL, LDAP, and SASL
+# Install system dependencies for MySQL
 RUN apt-get update -y && \
   apt-get upgrade -y && \
   apt-get install -y --no-install-recommends \
@@ -32,8 +32,14 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm -rf /tmp/requireme
 # Copy project files and set permissions
 COPY --chown=app_user:app_user . .
 
+# After installing python packages and purging build deps
+RUN apt-get purge -y --auto-remove build-essential && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Ensure shell scripts are executable
-RUN chmod a+x docker/django/entrypoint.sh docker/django/start.sh
+RUN chmod a+x docker/django/entrypoint.sh docker/django/start.sh /app/docker/django/healthcheck.sh
 
 # Switch to non-root user
 USER app_user:app_user
