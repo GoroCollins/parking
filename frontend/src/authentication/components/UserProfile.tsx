@@ -1,0 +1,247 @@
+import React, { /*useState,*/ useEffect, /*startTransition*/ } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import useSWR from 'swr';
+import { useAuthService } from '../hooks/useAuthService';
+import { axiosInstance } from "@/services/apiClient";
+// import placeholderProfileImage from '@/assets/placeholder.png';
+import { toast } from "sonner";
+import { type UserProfileForm, userProfileSchema } from '../types';
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+// import PhoneInput from 'react-phone-number-input';
+import { extractErrorMessage } from '@/utils/errorHandler';
+import { AxiosError } from "axios";
+// import { Footer } from '@/Footer';
+
+
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
+
+const UserProfile: React.FC = () => {
+  const { refreshUser } = useAuthService();
+  const { data: user, error, mutate } = useSWR("/users/users/me/", fetcher);
+  const navigate = useNavigate();
+  const form = useForm<UserProfileForm>({
+    resolver: zodResolver(userProfileSchema),
+  });
+
+//   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      form.setValue("username", user.username);
+      form.setValue("email", user.email);
+      form.setValue("first_name", user.first_name);
+      form.setValue("middle_name", user.middle_name || "");
+      form.setValue("last_name", user.last_name);
+    //   form.setValue("phone_number", user.phone_number || "");
+    //   startTransition(() => {
+    //     setPreviewImage(user.profile_image || null);
+    // });
+    }
+  }, [user, form]);
+
+  const onSubmit = async (data: UserProfileForm) => {
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("first_name", data.first_name);
+    formData.append("middle_name", data.middle_name || "");
+    formData.append("last_name", data.last_name);
+    // formData.append("phone_number", data.phone_number || "");
+
+    // if (data.profile_image?.[0]) {
+    //   formData.append("profile_image", data.profile_image[0]);
+    // }
+
+    try {
+      await axiosInstance.patch("/users/users/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Profile updated successfully");
+      await mutate();
+      await refreshUser();
+      navigate("/home");
+    } catch (error) {
+      const message = extractErrorMessage(error as AxiosError);
+      console.error("Error updating profile:", message);
+      toast.error(message);
+    }
+  };
+
+//   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = event.target.files?.[0];
+//     if (file) setPreviewImage(URL.createObjectURL(file));
+//   };
+
+  if (error) return <p>Error loading user profile</p>;
+  if (!user) return <p>Loading...</p>;
+
+  return (
+    <div className="container mx-auto max-w-2xl py-8">
+      <h1 className="text-2xl font-semibold mb-6">Manage Your Profile</h1>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          encType="multipart/form-data"
+          className="space-y-6"
+        >
+          {/* Username (read-only) */}
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input {...field} readOnly />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* Email */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* First Name */}
+          <FormField
+            control={form.control}
+            name="first_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Middle Name */}
+          <FormField
+            control={form.control}
+            name="middle_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Middle Name (Optional)</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* Last Name */}
+          <FormField
+            control={form.control}
+            name="last_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Phone Number */}
+          {/* <FormField
+            control={form.control}
+            name="phone_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <PhoneInput
+                    defaultCountry="KE"
+                    value={field.value}
+                    onChange={(value) => field.onChange(value || "")}
+                    international
+                    countryCallingCodeEditable={false}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+
+          {/* Profile Image Preview */}
+          {/* <div>
+            <FormLabel>Profile Image</FormLabel>
+            <div className="mt-2">
+              {previewImage ? (
+                <img
+                  src={previewImage}
+                  alt="Profile"
+                  className="w-37.5 h-37.5 object-cover rounded-md"
+                />
+              ) : (
+                <img
+                  src={placeholderProfileImage}
+                  alt="Placeholder"
+                  className="w-37.5 h-37.5 object-cover rounded-md"
+                />
+              )}
+            </div>
+          </div> */}
+
+          {/* Upload New Image */}
+          {/* <FormField
+            control={form.control}
+            name="profile_image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Change Profile Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      field.onChange(e.target.files);
+                      handleImageChange(e);
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          /> */}
+
+          <div className="flex items-center gap-4 pt-4">
+            <Button type="submit">Update Profile</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/changepassword")}
+            >
+              Change Password
+            </Button>
+          </div>
+        </form>
+      </Form>
+      {/* Footer */}
+      {/* <footer className="bg-gray-800 text-white text-center py-4 mt-12">
+        <Footer />
+      </footer> */}
+    </div>
+  );
+};
+
+export default UserProfile;
