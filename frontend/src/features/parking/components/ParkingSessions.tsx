@@ -76,11 +76,16 @@ export default function ParkingSessionsList() {
               </TableCell>
 
               {/* Amount */}
-              <TableCell className="text-muted-foreground">
+              {/* <TableCell className="text-muted-foreground">
                 {session.amount != null
                   ? session.amount.toFixed(2)
                   : "—"}
-              </TableCell>
+              </TableCell> */}
+            <TableCell className="text-muted-foreground">
+            {session.amount != null
+              ? Number(session.amount).toFixed(2)
+              : "—"}
+          </TableCell>
 
               {/* Assigned By */}
               <TableCell className="text-muted-foreground">

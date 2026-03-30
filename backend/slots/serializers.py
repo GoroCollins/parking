@@ -131,7 +131,7 @@ class PaymentDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = [
-            "id", "payment_type", "transaction_date", "created_by", "session", 
+            "id", "payment_type", "transaction_date", "receipted_by", "session", 
             "transaction_reference",  "amount", "payment_type_name"
         ]
         read_only_fields = fields
