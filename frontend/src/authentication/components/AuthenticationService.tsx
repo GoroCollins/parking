@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Attempt server logout only if refresh token exists
     if (refreshToken) {
-      await axiosInstance.post("/dj-rest-auth/logout/", { refresh: refreshToken });
+      await axiosInstance.post("/users/logout/", { refresh: refreshToken });
     }
 
     // Always clear local auth state
