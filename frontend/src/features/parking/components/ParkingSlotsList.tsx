@@ -84,7 +84,7 @@ export default function ParkingSlotsList({
 
               {/* Parking Area */}
               <TableCell className="text-muted-foreground">
-                {parkingslot.area || "—"}
+                {parkingslot.parking_area || "—"}
               </TableCell>
 
               <TableCell>

@@ -29,13 +29,15 @@ class ParkingAreaSerializer(serializers.ModelSerializer):
     
 class ParkingSlotSerializer(serializers.ModelSerializer):
     current_session = serializers.SerializerMethodField()
+    parking_area = serializers.CharField(source="area.name", read_only=True)
     class Meta:
         model = ParkingSlot
         fields = [
-            "id", "area", "name", "description", "available", "created_by", "created_at", "modified_by", "modified_at", "current_session"
+            "id", "area", "name", "description", "available", "created_by", "created_at", "modified_by", "modified_at", 
+            "current_session", "parking_area"
         ]
         read_only_fields = [
-            "id", "created_by", "created_at", "modified_by", "modified_at"
+            "id", "created_by", "created_at", "modified_by", "modified_at", "parking_area", "current_session"
         ]
         
     def create(self, validated_data):

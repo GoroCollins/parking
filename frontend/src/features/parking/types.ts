@@ -31,6 +31,7 @@ export interface ParkingSlot extends ParkingSlotFormData {
   created_by: string;
   modified_at: string;
   modified_by: string;
+  parking_area: string;
   current_session: {
     id: number;
     end_time: string | null;
