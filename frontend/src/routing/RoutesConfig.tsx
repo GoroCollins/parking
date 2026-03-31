@@ -6,7 +6,7 @@ import ChangePassword from "../authentication/components/ChangePassword";
 import ForgotPasswordForm from "../authentication/components/ForgotPassword";
 import ResetPasswordForm from "../authentication/components/ResetPassword";
 import { ProtectedRoute } from "./ProtectedRoutes";
-import Home from "@/Home";
+import Home from "@/Dashboard/Home";
 import ParkingAreasPage from "@/features/parking/pages/ParkingAreasPage";
 import ParkingAreaDetailsPage from "@/features/parking/pages/ParkingAreaDetailsPage";
 import ParkingSlotsPage from "@/features/parking/pages/ParkingSlotsPage";
