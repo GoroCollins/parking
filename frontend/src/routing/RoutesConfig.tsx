@@ -22,7 +22,13 @@ const RoutesConfig: React.FC = () => {
   return (
 <Routes>
   {/* Public routes */}
-  <Route path="/login" element={<Login />} />
+  <Route path="/login" 
+        element={
+          <div className="min-h-screen flex items-center justify-center">
+            <Login />
+          </div>
+    } 
+      />
   <Route path="/forgotpassword" element={<ForgotPasswordForm />} />
   <Route path="/resetpassword/:uid/:token" element={<ResetPasswordForm />} />
 
