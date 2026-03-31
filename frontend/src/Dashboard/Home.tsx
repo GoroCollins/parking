@@ -2,6 +2,10 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, DollarSign, ParkingCircle, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useTotalParkingSlots } from "./hooks/useParkingSlots";
+import { useTotalOccupiedSlots } from "./hooks/useOccupiedSlots";
+import { useTotalParkingSessions } from "./hooks/useParkingSessions";
+import { useTotalRevenue } from "./hooks/useTotalRevenue";
 
 interface StatCardProps {
   title: string;
@@ -34,13 +38,13 @@ const StatCard: React.FC<StatCardProps> = ({
 
 const Home: React.FC = () => {
   // 🔹 Mock data (replace with API later)
-  const totalSlots = 120;
-  const occupiedSlots = 85;
-  const availableSlots = totalSlots - occupiedSlots;
-  const occupancyRate = Math.round((occupiedSlots / totalSlots) * 100);
+  const totalSlots = useTotalParkingSlots();
+  const occupiedSlots = useTotalOccupiedSlots();
+  const availableSlots = totalSlots.value - occupiedSlots.value;
+  const occupancyRate = Math.round((occupiedSlots.value / totalSlots.value) * 100);
 
-  const todayRevenue = 12500; // KES
-  const activeSessions = 34;
+  const todayRevenue = useTotalRevenue(); // KES
+  const activeSessions = useTotalParkingSessions();
 
   return (
     <div className="p-6 space-y-6">
@@ -56,12 +60,12 @@ const Home: React.FC = () => {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Slots"
-          value={totalSlots}
+          value={totalSlots.isLoading ? <Skeleton className="h-6 w-16" /> : `${totalSlots.value?.toLocaleString() ?? "-"}`}
           icon={<ParkingCircle size={18} />}
         />
         <StatCard
           title="Occupied Slots"
-          value={occupiedSlots}
+          value={occupiedSlots.isLoading ? <Skeleton className="h-6 w-16" /> : `${occupiedSlots.value?.toLocaleString() ?? "-"}`}
           icon={<Car size={18} />}
         />
         <StatCard
@@ -70,10 +74,10 @@ const Home: React.FC = () => {
           icon={<ParkingCircle size={18} />}
         />
         <StatCard
-          title="Today's Revenue"
-          value={`KES ${todayRevenue.toLocaleString()}`}
+          title="Total Revenue"
+          value={todayRevenue.isLoading ? <Skeleton className="h-6 w-16" /> : `KES ${todayRevenue.value?.toLocaleString() ?? "-"}`}
           icon={<DollarSign size={18} />}
-          description="+12% from yesterday"
+          // description="+12% from yesterday"
         />
       </div>
 
@@ -98,7 +102,7 @@ const Home: React.FC = () => {
             <CardTitle>Active Sessions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{activeSessions}</div>
+            <div className="text-3xl font-bold">{activeSessions.isLoading ? <Skeleton className="h-6 w-16" /> : `${activeSessions.value?.toLocaleString() ?? "-"}`}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Vehicles currently parked
             </p>

@@ -8,11 +8,13 @@ from rest_framework import status
 from rest_framework.decorators import action
 from django.utils import timezone
 from rest_framework.pagination import LimitOffsetPagination
+from django.db.models import Sum
 
 # Create your views here.
 class Pagination(LimitOffsetPagination):
     default_limit = 20
     max_limit = 100
+
 class ParkingAreaViewSet(viewsets.ModelViewSet):
     queryset = ParkingArea.objects.select_related("created_by", "modified_by")
     serializer_class = ParkingAreaSerializer
@@ -83,6 +85,16 @@ class ParkingSlotViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=["get"])
+    def count(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        return Response({"count": queryset.count()})
+    
+    @action(detail=False, methods=["get"])
+    def occupied_slots(self, request):
+        count = self.filter_queryset(self.get_queryset()).filter(available=False).count()
+        return Response({"occupied_slots": count})
     
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.select_related("slot", "receipted_by")
@@ -127,8 +139,21 @@ class ParkingSessionViewSet(viewsets.ModelViewSet):
         context["request"] = self.request
         return context
     
+    @action(detail=False, methods=["get"])
+    def count(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        return Response({"count": queryset.count()})
+    
     def destroy(self, request, *args, **kwargs):
         return Response({"detail": "Deleting sessions is not allowed"}, status=status.HTTP_403_FORBIDDEN)
     
     def update(self, request, *args, **kwargs):
         return Response({"detail": "Modifying sessions is not allowed"}, status=status.HTTP_403_FORBIDDEN)
+    
+class TotalRevenueViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=["get"], url_path="total-purchases")
+    def total_revenue(self, request):
+        total = Payment.objects.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        return Response({"total_revenue": total}, status=status.HTTP_200_OK)
