@@ -105,7 +105,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Modifying payments is not allowed"}, status=status.HTTP_403_FORBIDDEN)
     
 class PaymentDetailsViewSet(viewsets.ModelViewSet):
-    queryset = Payment.objects.select_related("session", "receipted_by")
+    queryset = Payment.objects.select_related("session__created_by", "session__slot__area", "receipted_by")
     serializer_class = PaymentDetailsSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter,]
     pagination_class = Pagination

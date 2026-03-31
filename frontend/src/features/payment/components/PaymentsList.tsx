@@ -43,6 +43,7 @@ export default function PaymentsTable({
       <TableHeader>
         <TableRow>
           <TableHead>Payment Number</TableHead>
+          <TableHead>Parking Area</TableHead>
           <TableHead>Slot</TableHead>
           <TableHead>Payment Type</TableHead>
           <TableHead>Created By</TableHead>
@@ -74,7 +75,11 @@ export default function PaymentsTable({
           </TableCell>
 
           <TableCell>
-            {payment.slot}
+            {payment.slot.parking_area}
+          </TableCell>
+
+          <TableCell>
+            {payment.slot.name}
           </TableCell>
 
           <TableCell>
@@ -82,11 +87,16 @@ export default function PaymentsTable({
           </TableCell>
 
           <TableCell>
-            {payment.receipted_by}
+            {payment.cashier.full_name}
           </TableCell>
 
-          <TableCell className="text-right">
+          {/* <TableCell className="text-right">
             {payment.amount}
+          </TableCell> */}
+          <TableCell className="text-muted-foreground">
+            {payment.amount != null
+              ? Number(payment.amount).toFixed(2)
+              : "—"}
           </TableCell>
 
           <TableCell>

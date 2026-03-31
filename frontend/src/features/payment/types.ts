@@ -35,6 +35,13 @@ export interface Payment extends PaymentFormData {
   id: number;
   transaction_date: string;
   receipted_by: string;
-  slot: string;
+  slot: {
+    name: string;
+    parking_area: string
+  };
   payment_type_name: string;
+  cashier: {
+    username: string;
+    full_name: string
+  }
 };

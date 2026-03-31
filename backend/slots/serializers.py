@@ -70,9 +70,10 @@ class UserMinimalSerializer(serializers.ModelSerializer):
         fields = ["username", "full_name"]
 
 class ParkingSlotMinimalSerializer(serializers.ModelSerializer):
+    parking_area = serializers.CharField(source="area.name", read_only=True)
     class Meta:
         model = ParkingSlot
-        fields = ["name",]
+        fields = ["name", "parking_area"]
 
 class ParkingSessionSerializer(serializers.ModelSerializer):
     assigned_by = UserMinimalSerializer(source="created_by", read_only=True)
@@ -153,11 +154,13 @@ class PaymentSerializer(serializers.ModelSerializer):
     
 class PaymentDetailsSerializer(serializers.ModelSerializer):
     payment_type_name = serializers.CharField(source="get_payment_type_display", read_only=True)
+    cashier = UserMinimalSerializer(source="receipted_by", read_only=True)
     session = ParkingSessionSerializer(read_only=True)
+    slot = ParkingSlotMinimalSerializer(source="session.slot", read_only=True)
     class Meta:
         model = Payment
         fields = [
             "id", "payment_type", "transaction_date", "receipted_by", "session", 
-            "transaction_reference",  "amount", "payment_type_name"
+            "transaction_reference",  "amount", "payment_type_name", "cashier", "slot"
         ]
         read_only_fields = fields
