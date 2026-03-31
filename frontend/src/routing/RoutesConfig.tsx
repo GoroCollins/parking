@@ -13,6 +13,7 @@ import ParkingSlotsPage from "@/features/parking/pages/ParkingSlotsPage";
 import ParkingSlotDetailsPage from "@/features/parking/pages/ParkingSlotDetailsPage";
 import PaymentsListPage from "@/features/payment/pages/PaymentsListPage";
 import ParkingSessionsList from "@/features/parking/components/ParkingSessions";
+import UsersList from "@/features/users/components/UsersList";
 
 import { Navigate } from "react-router-dom";
 
@@ -47,6 +48,8 @@ const RoutesConfig: React.FC = () => {
       <Route path="/parkingsessions" element={<ParkingSessionsList />} />
 
       <Route path="/payments" element={<PaymentsListPage />} />
+
+      <Route path="/users" element={<UsersList />} />
 
     </Route>
 

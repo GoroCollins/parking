@@ -43,6 +43,9 @@ export const Sidebar = () => {
         <a href="/payments" className="block p-2 rounded hover:bg-gray-800">
           Payments
         </a>
+        <a href="/users" className="block p-2 rounded hover:bg-gray-800">
+          Users
+        </a>
       </nav>
 
       {/* Bottom section */}
