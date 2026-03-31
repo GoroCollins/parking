@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, DollarSign, ParkingCircle, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTotalParkingSlots } from "./hooks/useParkingSlots";
 import { useTotalOccupiedSlots } from "./hooks/useOccupiedSlots";
 import { useTotalParkingSessions } from "./hooks/useParkingSessions";
@@ -9,7 +10,7 @@ import { useTotalRevenue } from "./hooks/useTotalRevenue";
 
 interface StatCardProps {
   title: string;
-  value: string | number;
+  value: React.ReactNode;
   icon: React.ReactNode;
   description?: string;
 }
@@ -40,8 +41,10 @@ const Home: React.FC = () => {
   // 🔹 Mock data (replace with API later)
   const totalSlots = useTotalParkingSlots();
   const occupiedSlots = useTotalOccupiedSlots();
-  const availableSlots = totalSlots.value - occupiedSlots.value;
-  const occupancyRate = Math.round((occupiedSlots.value / totalSlots.value) * 100);
+  const total = totalSlots.value ?? 0;
+  const occupied = occupiedSlots.value ?? 0;
+  const availableSlots = total - occupied;
+  const occupancyRate = Math.round((occupied / total) * 100);
 
   const todayRevenue = useTotalRevenue(); // KES
   const activeSessions = useTotalParkingSessions();
@@ -52,7 +55,7 @@ const Home: React.FC = () => {
       <div>
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Overview of your parking system
+          Overview of the parking system
         </p>
       </div>
 
@@ -88,7 +91,7 @@ const Home: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex justify-between mb-2 text-sm text-muted-foreground">
-            <span>{occupiedSlots} occupied</span>
+            <span>{occupiedSlots.value} occupied</span>
             <span>{occupancyRate}%</span>
           </div>
           <Progress value={occupancyRate} />
