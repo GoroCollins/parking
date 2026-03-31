@@ -1,4 +1,5 @@
 from slots.models import ParkingArea, ParkingSlot, Payment, ParkingSession
+from authentication.models import CustomUser
 from rest_framework import serializers
 from django.db import transaction
 from django.utils import timezone
@@ -60,15 +61,30 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
             "paid": session.payments.exists(),
             "amount": session.amount or 0,
         }
-    
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source="get_full_name", read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ["username", "full_name"]
+
+class ParkingSlotMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParkingSlot
+        fields = ["name",]
+
 class ParkingSessionSerializer(serializers.ModelSerializer):
+    assigned_by = UserMinimalSerializer(source="created_by", read_only=True)
+    slot_name = ParkingSlotMinimalSerializer(source="slot", read_only=True)
+    duration_display = serializers.SerializerMethodField()
     class Meta:
         model = ParkingSession
         fields = [
-            "id", "slot", "start_time", "end_time", "duration", "created_by", "amount"
+            "id", "slot", "start_time", "end_time", "duration", "created_by", "amount", "assigned_by", "slot_name", "duration_display"
         ]
         read_only_fields = [
-            "id", "start_time", "end_time", "duration", "created_by", "amount"
+            "id", "start_time", "end_time", "duration", "created_by", "amount", "assigned_by", "slot_name", "duration_display"
         ]
         
     def create(self, validated_data):
@@ -76,6 +92,16 @@ class ParkingSessionSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             validated_data['created_by'] = request.user
         return super().create(validated_data)
+    
+    def get_duration_display(self, obj):
+        if not obj.duration:
+            return None
+
+        total_seconds = int(obj.duration.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+
+        return f"{hours}h {minutes}m"
     
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:

@@ -9,6 +9,7 @@ export default function ParkingSessionsList() {
     "/slots/parkingsessions/",
     fetcher
   );
+  console.log("Parking Session data", parkingSessions)
 
   // Format date helper
   const formatDate = (date?: string | null) => {
@@ -48,6 +49,7 @@ export default function ParkingSessionsList() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Slot Name</TableHead>
             <TableHead>Start Time</TableHead>
             <TableHead>End Time</TableHead>
             <TableHead>Duration</TableHead>
@@ -60,6 +62,11 @@ export default function ParkingSessionsList() {
           {parkingSessions.map((session) => (
             <TableRow key={session.id}>
               
+              {/* SLot Name */}
+              <TableCell className="text-muted-foreground">
+                {session.slot_name.name ?? "—"}
+              </TableCell>
+
               {/* Start Time */}
               <TableCell className="font-medium">
                 {formatDate(session.start_time)}
@@ -72,25 +79,20 @@ export default function ParkingSessionsList() {
 
               {/* Duration */}
               <TableCell className="text-muted-foreground">
-                {session.duration ?? "—"}
+                {session.duration_display ?? "—"}
               </TableCell>
 
               {/* Amount */}
-              {/* <TableCell className="text-muted-foreground">
-                {session.amount != null
-                  ? session.amount.toFixed(2)
-                  : "—"}
-              </TableCell> */}
             <TableCell className="text-muted-foreground">
             {session.amount != null
               ? Number(session.amount).toFixed(2)
               : "—"}
           </TableCell>
 
-              {/* Assigned By */}
-              <TableCell className="text-muted-foreground">
-                {session.created_by ?? "—"}
-              </TableCell>
+            {/* Assigned By */}
+            <TableCell className="text-muted-foreground">
+              {session.assigned_by.full_name ?? "—"}
+            </TableCell>
 
             </TableRow>
           ))}

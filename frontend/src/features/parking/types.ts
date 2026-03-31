@@ -50,6 +50,14 @@ export interface ParkingSession extends ParkingSessionFormData {
   start_time: string;
   end_time: string;
   duration: number;
+  duration_display: string;
   amount: number;
-  created_by: string
+  created_by: string;
+  assigned_by: {
+    username: string,
+    full_name: string
+  };
+  slot_name: {
+    name: string
+  };
 };
