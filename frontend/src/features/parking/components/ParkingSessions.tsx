@@ -39,7 +39,7 @@ export default function ParkingSessionsList() {
   if (!parkingSessions || parkingSessions.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        No parking sessions found.
+        No active parking sessions found.
       </p>
     );
   }
