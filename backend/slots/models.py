@@ -93,7 +93,7 @@ class Payment(models.Model):
     receipted_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="cashiers")
     
     def __str__(self):
-        return f"Payment For Slot:{self.slot.name} made at {self.transaction_date}"
+        return f"Payment For Slot:{self.session.slot.name} made at {self.transaction_date}"
     
     class Meta:
         verbose_name_plural = "Payments"
