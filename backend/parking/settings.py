@@ -44,7 +44,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "corsheaders",
+    "corsheaders", # allows communication between backend and frontend
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
