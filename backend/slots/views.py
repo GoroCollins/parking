@@ -126,7 +126,7 @@ class PaymentDetailsViewSet(viewsets.ModelViewSet):
     search_fields = ["id", "session", "receipted_by__username",]
     
 class ParkingSessionViewSet(viewsets.ModelViewSet):
-    queryset = ParkingSession.objects.select_related("slot", "created_by")
+    queryset = ParkingSession.objects.filter(end_time__isnull=True).select_related("slot", "created_by")
     serializer_class = ParkingSessionSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter,]
